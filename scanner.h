@@ -1,5 +1,5 @@
 /*
- *  scanner.c
+ *  scanner.h
  *  Implementación del escáner
  */
 
