@@ -47,7 +47,7 @@ void sentencia(void){
 		case ID:
 			identificador();
 			match(ASIGNACION);
-			termino();
+			expresion();
 			asignar(); //#asignar
 			match(PUNTOYCOMA);
 			break;
@@ -129,12 +129,12 @@ void expresion(struct reg_expr *preg){
 
 void termino(struct reg_expr *preg){
 	//<término> -> <expresió> {<operadorMultiplicativo> <término>}
-	expresion();
+	primaria();
 	while(1){
 		token tok = next_token();
 		if(tok == MULTIPLICACION || tok == DIVISION){
 			operador_multiplicativo();
-			termino();
+			primaria();
 		}
 	}
 }
