@@ -2,7 +2,8 @@
  *  parser.c
  *  Implementación del parser
  */
- 
+
+#include "error.h"
 #include "parser.h"
 
 void objetivo(void) {

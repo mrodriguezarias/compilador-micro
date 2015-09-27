@@ -13,6 +13,8 @@
 #include <signal.h> // signal()
 #include <stdbool.h> // bool, true, false
 
+extern FILE * fin, * fout;
+
 typedef enum {lowercase, uppercase} case_type;
 void change_string_case(char * const, case_type);
 

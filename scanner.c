@@ -3,6 +3,7 @@
  *  Implementación del escáner
  */
 
+#include "error.h"
 #include "scanner.h"
 
 const char * tok_names[] = {
@@ -12,12 +13,12 @@ const char * tok_names[] = {
     "COMENTARIO", "FDT", "ERRORLEXICO", "ERRORASIG", "ERRORCTE", NULL
 };
 
-const char * reserved_keywords[] = {"inicio", "fin", "leer", "escribir", NULL};
-
 static char lexeme[100];
 char * const yytext = lexeme;
 unsigned yyline = 1, lexindex = 0;
-FILE * fin, * fout;
+
+token current_token = NIL;
+bool read_next_token = true;
 
 /* Tabla de transiciones
  */
@@ -102,8 +103,7 @@ token scanner(void) {
     switch (state) {
         case  7: // reconoce identificador
             unread_char();
-            return find_string_in_array(lexeme, reserved_keywords) >= 0 ?
-                get_token_from_name(lexeme) : ID;
+            return ID;
         case  8: // reconoce constante
             unread_char();
             return CONSTANTE;
@@ -141,6 +141,33 @@ token scanner(void) {
         default:
             return NIL;
     }
+}
+
+token next_token(void) {
+    if (read_next_token) {
+        read_next_token = false;
+        current_token = scanner();
+        switch (current_token) {
+            case ID:
+                // TODO
+                break;
+            case ERRORLEXICO:
+            case ERRORASIG:
+            case ERRORCTE:
+                error_lexico(current_token);
+            case COMENTARIO:
+                current_token = scanner();
+            default: ;
+        }
+    }
+    return current_token;
+}
+
+void match(token t) {
+    if (next_token() != t) {
+        if (current_token != ID) error_sintactico(t);
+    }
+    read_next_token = true;
 }
 
 /* Funciones auxiliares para probar el escáner y mostrarlo por pantalla */
@@ -189,7 +216,9 @@ void handle_interrupt_signal() {
     exit(EXIT_SUCCESS);
 }
 
-int main(int argc, const char * argv[]) {
+/* Usar esta función como main() y compilar el programa para probar el escáner.
+ */
+int test_scanner(int argc, const char * argv[]) {
     fin = stdin;
     fout = stdout;
     if (argc > 1) fin = fopen(argv[1], "r");

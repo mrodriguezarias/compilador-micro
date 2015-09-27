@@ -5,6 +5,8 @@
 
 #include "common.h"
 
+FILE * fin = NULL, * fout = NULL;
+
 /* Convierte las letras de una cadena a mayúsculas o a minúsculas,
  * según lo especificado por el segundo parámetro.
  */
