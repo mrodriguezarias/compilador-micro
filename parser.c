@@ -111,32 +111,34 @@ void lista_expresiones(void){
 
 void expresion(struct reg_expr *preg){
 	//<expresión>-> <primaria> {<operadorAditivo> <primaria>}
-	primaria();
+	reg_expr rigth_operand, left_operand;
+	reg_op op;
+	termino(rigth_operand);
 	while(1){
-		switch(next_token()){
-
-			case SUMA: case RESTA:
-				operador_aditivo();
-				primaria();
-				gen_infijo(); //#gen_infijo
-				break;
-
-			default:
-				return;
+		token tok = next_token();
+		if(tok == SUMA || tok == RESTA){
+			operador_aditivo(op);
+			termino(left_operand);
+			rigth_operand = gen_infijo(rigth_operand, op, left_operand); //#gen_infijo
 		}
 	}
+	*preg = rigth_operand;
 }
 
 void termino(struct reg_expr *preg){
 	//<término> -> <expresió> {<operadorMultiplicativo> <término>}
-	primaria();
+	reg_expr rigth_operand, left_operand;
+	reg_op op;
+	primaria(rigth_operand);
 	while(1){
 		token tok = next_token();
 		if(tok == MULTIPLICACION || tok == DIVISION){
-			operador_multiplicativo();
-			primaria();
+			operador_multiplicativo(op);
+			primaria(left_operand);
+			rigth_operand = gen_infijo(rigth_operand, op, left_operand); //#gen_infijo
 		}
 	}
+	*preg = rigth_operand;
 }
 
 void primaria(struct reg_expr *preg){
@@ -148,7 +150,7 @@ void primaria(struct reg_expr *preg){
 	switch (tok) {
 
 		case ID:
-			identificador();
+			identificador(preg);
 			break;
 
 		case CONSTANTE:
@@ -158,7 +160,7 @@ void primaria(struct reg_expr *preg){
 
 		case PARENIZQUIERDO:
 			match(PARENIZQUIERDO);
-			expresion();
+			expresion(preg);
 			match(PARENDERECHO);
 			break;
 

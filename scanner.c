@@ -164,9 +164,7 @@ token next_token(void) {
 }
 
 void match(token t) {
-    if (next_token() != t) {
-        if (current_token != ID) error_sintactico(t);
-    }
+    if (next_token() != t) error_sintactico(t);
     read_next_token = true;
 }
 
