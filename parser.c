@@ -42,13 +42,14 @@ void sentencia(void){
 	*				ESCRIBIR PARENIZQUIERDO <listaExpresiones> PARENDERECHO PUNTOYCOMA
 	*/
 	token tok = next_token();
+	reg_expr rigth_operand, left_operand;
 	switch (tok) {
 
 		case ID:
-			identificador();
+			identificador(rigth_operand);
 			match(ASIGNACION);
-			expresion();
-			asignar(); //#asignar
+			expresion(left_operand);
+			asignar(left_operand,rigth_operand); //#asignar
 			match(PUNTOYCOMA);
 			break;
 
@@ -76,13 +77,14 @@ void sentencia(void){
 
 void lista_identificadores(void){
 	//<listaIdentificadores>-> ID {COMA ID}
-	identificador();
-	leer_id(); //#leer_id
+	reg_expr id;
+	identificador(id);
+	leer_id(id); //#leer_id
 	while(1){
 		if(next_token()==COMA){
 			match(COMA);
-			identificador();
-			leer_id(); //#leer_id
+			identificador(id);
+			leer_id(id); //#leer_id
 		}else{
 			return;
 		}
@@ -91,18 +93,19 @@ void lista_identificadores(void){
 
 void identificador(struct reg_expr *preg){
 	match(ID);
-	procesar_id(); //#procesar_id
+	*preg = procesar_id(); //#procesar_id
 }
 
 void lista_expresiones(void){
 	//<listaExpresiones> -> <expresión> {COMA <expresión>}
-	expresion();
-	escribir_exp(); //#escribir_exp
+	reg_expr exp;
+	expresion(exp);
+	escribir_exp(exp); //#escribir_exp
 	while(1){
 		if(next_token()==COMA){
 			match(COMA);
-			expresion();
-			escribir_exp(); //#escribir_exp
+			expresion(exp);
+			escribir_exp(exp); //#escribir_exp
 		}else{
 			return;
 		}
@@ -113,32 +116,32 @@ void expresion(struct reg_expr *preg){
 	//<expresión>-> <primaria> {<operadorAditivo> <primaria>}
 	reg_expr rigth_operand, left_operand;
 	reg_op op;
-	termino(rigth_operand);
+	termino(left_operand);
 	while(1){
 		token tok = next_token();
 		if(tok == SUMA || tok == RESTA){
 			operador_aditivo(op);
-			termino(left_operand);
-			rigth_operand = gen_infijo(rigth_operand, op, left_operand); //#gen_infijo
+			termino(rigth_operand);
+			left_operand = gen_infijo(left_operand, op, rigth_operand); //#gen_infijo
 		}
 	}
-	*preg = rigth_operand;
+	*preg = left_operand;
 }
 
 void termino(struct reg_expr *preg){
 	//<término> -> <expresió> {<operadorMultiplicativo> <término>}
 	reg_expr rigth_operand, left_operand;
 	reg_op op;
-	primaria(rigth_operand);
+	primaria(left_operand);
 	while(1){
 		token tok = next_token();
 		if(tok == MULTIPLICACION || tok == DIVISION){
 			operador_multiplicativo(op);
-			primaria(left_operand);
-			rigth_operand = gen_infijo(rigth_operand, op, left_operand); //#gen_infijo
+			primaria(rigth_operand);
+			left_operand = gen_infijo(left_operand, op, rigth_operand); //#gen_infijo
 		}
 	}
-	*preg = rigth_operand;
+	*preg = left_operand;
 }
 
 void primaria(struct reg_expr *preg){
@@ -155,7 +158,7 @@ void primaria(struct reg_expr *preg){
 
 		case CONSTANTE:
 			match(CONSTANTE);
-			procesar_cte(); //#procesar_cte
+			*preg = procesar_cte(); //#procesar_cte
 			break;
 
 		case PARENIZQUIERDO:
@@ -175,7 +178,7 @@ void operador_aditivo(struct reg_op *preg){
 	token tok = next_token();
 	if(tok == SUMA || tok == RESTA){
 		match(tok);
-		procesar_op(); //#procesar_cte
+		*preg = procesar_op(); //#procesar_cte
 	}else{
 		//error
 	}
@@ -186,7 +189,7 @@ void operador_multiplicativo(struct reg_op *preg){
 	token tok = next_token();
 	if(tok == MULTIPLICACION || tok == DIVISION){
 		match(tok);
-		procesar_op(); //#procesar_cte
+		*preg = procesar_op(); //#procesar_cte
 	}else{
 		//error
 	}
