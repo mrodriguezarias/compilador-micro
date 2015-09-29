@@ -23,14 +23,13 @@ void programa(void){
 
 void lista_sentencias(void){
 	//<listaSentencias> -> <sentencia> {<sentencia>}
+	token tok = next_token();
 	sentencia();
 	while (1) {
-		switch (next_token()) {
-			case ID: case LEER: case ESCRIBIR:
-				sentencia();
-				break;
-			default:
-				return;
+		if (tok == LEER || tok == ESCRIBIR) {
+			sentencia();
+		}else {
+			return;
 		}
 	}
 }
@@ -175,22 +174,30 @@ void primaria(struct reg_expr *preg){
 
 void operador_aditivo(struct reg_op *preg){
 	//<operadorAditivo> -> uno de SUMA RESTA
-	token tok = next_token();
-	if(tok == SUMA || tok == RESTA){
-		match(tok);
-		*preg = procesar_op(); //#procesar_cte
-	}else{
-		//error
-	}
+	match(tok);
+	*preg = procesar_op(); //#procesar_cte
 }
 
 void operador_multiplicativo(struct reg_op *preg){
 	//<operadorMultiplicativo> -> uno de MULTIPLICACION DIVICION
-	token tok = next_token();
-	if(tok == MULTIPLICACION || tok == DIVISION){
-		match(tok);
-		*preg = procesar_op(); //#procesar_cte
-	}else{
-		//error
-	}
+	match(tok);
+	*preg = procesar_op(); //#procesar_cte
+}
+
+int main(int argc, const char * argv[]) {
+
+	fout = stdout;
+	if (argc < 2) error_arg(); // error faltan argumentos
+    if((fin = fopen(argv[1], "r")) == NULL)
+		error_apertura_arch(argv[1]); //error al abrir el archivo de entrada
+
+	if (argc > 2) 
+		if((fout = fopen(argv[2], "w")) == NULL)
+			error_apertura_arch(argv[2]); //error al abrir el archivo de salida
+
+	objetivo();
+    
+    fclose(fin);
+    if (argc > 2) fclose(fout);
+    return EXIT_SUCCESS;
 }

@@ -28,3 +28,12 @@ void error_sintactico(token tok) {
     fprintf(fout, "Error sintáctico en la línea %u: el lexema '%s' no pertenece a la categoría léxica %s.\n", yyline, yytext, get_token_name(tok));
     exit(EXIT_FAILURE);
 }
+
+void error_arg(void) {
+	fprintf(fout, "parser debe recibir por lo menos 1 argumento.\n\tparcer <archivo entrada> [<archivo salida>]\n");
+	exit(EXIT_FAILURE);
+}
+void error_apertura_arch(char * path) {
+	fprintf(fout, "Error en la apertura del archivo %s\n", *path);
+	exit(EXIT_FAILURE);
+}
