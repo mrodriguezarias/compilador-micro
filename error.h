@@ -5,7 +5,6 @@
 
 void error_lexico(token tok);
 void error_sintactico(token tok);
-void error_arg(void);
-void error_apertura_arch(char * path);
+void error_de_archivo(const char *);
 
 #endif // ERROR_H_INCLUDED

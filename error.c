@@ -4,36 +4,32 @@
  */
 
 #include "error.h"
+#include <errno.h>
  
 void error_lexico(token tok) {
-    fprintf(fout, "Error léxico en la línea %u: ", yyline);
+    fprintf(stderr, "Error léxico en la línea %u: ", yyline);
     switch (tok) {
         case ERRORLEXICO:
-            fprintf(fout, "el lexema '%s' no pertenece a ninguna categoría léxica", yytext);
+            fprintf(stderr, "el lexema '%s' no pertenece a ninguna categoría léxica.\n", yytext);
             break;
         case ERRORASIG:
-            fprintf(fout, "'%s' no es un operador de asignación bien formado", yytext);
+            fprintf(stderr, "'%s' no es un operador de asignación bien formado.\n", yytext);
             break;
         case ERRORCTE:
-            fprintf(fout, "'%s' no es una constante numérica bien formada", yytext);
+            fprintf(stderr, "'%s' no es una constante numérica bien formada.\n", yytext);
             break;
         default:
             break;
     }
-    fputs(".\n", fout);
     exit(EXIT_FAILURE);
 }
 
 void error_sintactico(token tok) {
-    fprintf(fout, "Error sintáctico en la línea %u: el lexema '%s' no pertenece a la categoría léxica %s.\n", yyline, yytext, get_token_name(tok));
+    fprintf(stderr, "Error sintáctico en la línea %u: el lexema '%s' no pertenece a la categoría léxica %s.\n", yyline, yytext, get_token_name(tok));
     exit(EXIT_FAILURE);
 }
 
-void error_arg(void) {
-	fprintf(fout, "parser debe recibir por lo menos 1 argumento.\n\tparcer <archivo entrada> [<archivo salida>]\n");
-	exit(EXIT_FAILURE);
-}
-void error_apertura_arch(char * path) {
-	fprintf(fout, "Error en la apertura del archivo %s\n", *path);
+void error_de_archivo(const char * nombre) {
+    fprintf(stderr, "Error al procesar archivo '%s': %s.\n", nombre, strerror(errno));
 	exit(EXIT_FAILURE);
 }

@@ -16,8 +16,8 @@ struct reg_op {
 void generar(char *op, char *a, char *b, char *c);
 void comenzar(void);
 void terminar(void);
-void asignar(struct reg_expr *vizq, struct reg_expr *vder);
-char *extraer(struct reg_expr *preg);
+void asignar(struct reg_expr *, struct reg_expr *);
+char * extraer(struct reg_expr *preg);
 void leer_id(struct reg_expr *pin);
 void escribir_exp(struct reg_expr *pout);
 struct reg_expr procesar_cte(void);
