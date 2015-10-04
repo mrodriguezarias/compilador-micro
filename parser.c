@@ -72,7 +72,7 @@ void sentencia(void) {
 			break;
 
 		default:
-			error_sintactico(tok);
+			error_sintactico(tok, "SENTENCIA");
 	}
 }
 
@@ -156,7 +156,7 @@ void primaria(reg_expr * preg) {
 			break;
 
 		default:
-			error_sintactico(tok);
+			error_sintactico(tok, "PRIMARIA");
 	}
 }
 
@@ -165,7 +165,7 @@ void operador_aditivo(reg_op * preg) {
     token tok = next_token();
     
     if (tok != SUMA && tok != RESTA)
-        error_sintactico(tok);
+        error_sintactico(tok, "OPERADOR_ADITIVO");
     
     match(tok);
 	*preg = procesar_op(); // #procesar_op
@@ -176,7 +176,7 @@ void operador_multiplicativo(reg_op * preg) {
     token tok = next_token();
     
     if (tok != MULTIPLICACION && tok != DIVISION)
-        error_sintactico(tok);
+        error_sintactico(tok, "OPERADOR_MULTIPLICATIVO");
     
     match(tok);
     *preg = procesar_op(); // #procesar_op

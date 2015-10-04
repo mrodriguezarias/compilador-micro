@@ -24,12 +24,17 @@ void error_lexico(token tok) {
     exit(EXIT_FAILURE);
 }
 
-void error_sintactico(token tok) {
-    fprintf(stderr, "Error sintáctico en la línea %u: el lexema '%s' no pertenece a la categoría léxica %s.\n", yyline, yytext, get_token_name(tok));
+void error_sintactico(token tok, string cat) {
+    fprintf(stderr, "Error sintáctico en la línea %u: ", yyline);
+    string lex = *yytext == FDT ? yytext : "(fin de archivo)";
+    if (cat == NULL)
+        fprintf(stderr, "el lexema '%s' no pertenece a la categoría léxica %s.\n", lex, get_token_name(tok));
+    else
+        fprintf(stderr, "la categoría sintáctica %s no puede comenzar con '%s'.\n", cat, lex);
     exit(EXIT_FAILURE);
 }
 
 void error_de_archivo(string nombre) {
-    fprintf(stderr, "Error al procesar archivo '%s': %s.\n", nombre, strerror(errno));
+    fprintf(stderr, "Error al procesar el archivo '%s': %s.\n", nombre, strerror(errno));
 	exit(EXIT_FAILURE);
 }
