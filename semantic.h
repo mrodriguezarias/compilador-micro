@@ -1,28 +1,33 @@
-#ifndef SEMANTIC_H_INCLUDED
-#define SEMANTIC_H_INCLUDED
+/*
+ *  semantic.h
+ *  Implementación de las rutinas semánticas
+ */
+
+#ifndef semantic_h
+#define semantic_h
 
 #include "symbol.h"
 
-struct reg_expr {
+typedef struct {
 	token clase;
-	char nombre[TAMLEX];
+	char nombre[LEXSIZE];
 	int valor;
-};
+} reg_expr;
 
-struct reg_op {
+typedef struct {
 	int cod_oper;
-};
+} reg_op;
 
-void generar(char *op, char *a, char *b, char *c);
+void generar(string, string, string, string);
 void comenzar(void);
 void terminar(void);
-void asignar(struct reg_expr *, struct reg_expr *);
-char * extraer(struct reg_expr *preg);
-void leer_id(struct reg_expr *pin);
-void escribir_exp(struct reg_expr *pout);
-struct reg_expr procesar_cte(void);
-struct reg_expr procesar_id(void);
-struct reg_op procesar_op(void);
-struct reg_expr gen_infijo(struct reg_expr *pei, struct reg_op *op, struct reg_expr *ped);
+void asignar(reg_expr *, reg_expr *);
+char * extraer(reg_expr *preg);
+void leer_id(reg_expr *pin);
+void escribir_exp(reg_expr *pout);
+reg_expr procesar_cte(void);
+reg_expr procesar_id(void);
+reg_op procesar_op(void);
+reg_expr gen_infijo(reg_expr *pei, reg_op *op, reg_expr *ped);
 
-#endif // SEMANTIC_H_INCLUDED
+#endif /* semantic_h */

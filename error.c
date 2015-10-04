@@ -1,6 +1,6 @@
 /*
  *  error.c
- *  Mostrar errores
+ *  Impresión de mensajes de error en la salida de error estándar
  */
 
 #include "error.h"
@@ -29,7 +29,7 @@ void error_sintactico(token tok) {
     exit(EXIT_FAILURE);
 }
 
-void error_de_archivo(const char * nombre) {
+void error_de_archivo(string nombre) {
     fprintf(stderr, "Error al procesar archivo '%s': %s.\n", nombre, strerror(errno));
 	exit(EXIT_FAILURE);
 }

@@ -1,18 +1,25 @@
-#ifndef SYMBOL_H_INCLUDED
-#define SYMBOL_H_INCLUDED
+/*
+ *  symbol.h
+ *  Tabla de símbolos y funciones relacionadas
+ */
+
+#ifndef symbol_h
+#define symbol_h
 
 #include "scanner.h"
-#define TAMLEX 32+1
 
-struct ts_entry{
-	char lexema[TAMLEX];
-	token tok; /* tok=0, 1, 2, 3 Palabra Reservada, tok=ID=4 Identificador */
-};
+#define LEXSIZE 32+1
 
-extern struct ts_entry tabla_simb[];
+typedef struct {
+	char lex[LEXSIZE];
+	token tok;
+} symbol;
 
-int buscar(char *id, struct ts_entry *ts, token *tok);
-void colocar(char *id, struct ts_entry *ts);
-void chequear(char *id);
+extern symbol symbols[];
 
-#endif // SYMBOL_H_INCLUDED
+void build_symbol_table(void);
+bool buscar(string, symbol *, token *);
+void colocar(string, symbol *);
+void chequear(string);
+
+#endif /* symbol_h */

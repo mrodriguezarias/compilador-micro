@@ -5,8 +5,12 @@
 
 #include "semantic.h"
 
-void generar(char *op, char *a, char *b, char *c) {
-    // Esta es la que hay que hacer para la entrega de mañana (2015-09-30)
+void generar(string op, string a, string b, string c) {
+    fprintf(fout, "%s", op);
+    if (a != NULL) fprintf(fout, " %s", a);
+    if (b != NULL) fprintf(fout, ",%s", b);
+    if (c != NULL) fprintf(fout, ",%s", c);
+    fputs("\n", fout);
 }
 
 void comenzar(void) {
@@ -17,34 +21,34 @@ void terminar(void) {
     
 }
 
-void asignar(struct reg_expr *lval, struct reg_expr *rval) {
+void asignar(reg_expr *lval, reg_expr *rval) {
     
 }
 
-char * extraer(struct reg_expr *preg) {
+char * extraer(reg_expr *preg) {
     return NULL;
 }
 
-void leer_id(struct reg_expr *pin) {
+void leer_id(reg_expr *pin) {
     
 }
 
-void escribir_exp(struct reg_expr *pout) {
+void escribir_exp(reg_expr *pout) {
     
 }
 
-struct reg_expr procesar_cte(void) {
-    return (struct reg_expr){};
+reg_expr procesar_cte(void) {
+    return (reg_expr){};
 }
 
-struct reg_expr procesar_id(void) {
-    return (struct reg_expr){};
+reg_expr procesar_id(void) {
+    return (reg_expr){};
 }
 
-struct reg_op procesar_op(void) {
-    return (struct reg_op){};
+reg_op procesar_op(void) {
+    return (reg_op){};
 }
 
-struct reg_expr gen_infijo(struct reg_expr *pei, struct reg_op *op, struct reg_expr *ped) {
-    return (struct reg_expr){};
+reg_expr gen_infijo(reg_expr *pei, reg_op *op, reg_expr *ped) {
+    return (reg_expr){};
 }

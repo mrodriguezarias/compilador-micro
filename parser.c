@@ -3,8 +3,8 @@
  *  Implementación del parser
  */
 
-#include "error.h"
 #include "parser.h"
+#include "error.h"
 
 void objetivo(void) {
 	// <objetivo> -> <programa> FDT
@@ -24,7 +24,7 @@ void programa(void) {
 void lista_sentencias(void) {
 	// <listaSentencias> -> <sentencia> {<sentencia>}
 	sentencia();
-	while (1) {
+	while (true) {
         switch (next_token()) {
             case ID:
             case LEER:
@@ -44,7 +44,7 @@ void sentencia(void) {
 	 *              | ESCRIBIR PARENIZQUIERDO <listaExpresiones> PARENDERECHO PUNTOYCOMA
 	 */
 	token tok = next_token();
-	struct reg_expr right_operand, left_operand;
+	reg_expr right_operand, left_operand;
 	switch (tok) {
             
 		case ID:
@@ -78,31 +78,31 @@ void sentencia(void) {
 
 void lista_identificadores(void){
 	// <listaIdentificadores> -> <identificador> {COMA <identificador>}
-	struct reg_expr id;
+	reg_expr id;
     do {
         identificador(&id);
         leer_id(&id); // #leer_id
     } while(next_token() == COMA && (match(COMA), true));
 }
 
-void identificador(struct reg_expr * preg){
+void identificador(reg_expr * preg){
 	match(ID);
 	*preg = procesar_id(); // #procesar_id
 }
 
 void lista_expresiones(void) {
 	// <listaExpresiones> -> <expresión> {COMA <expresión>}
-	struct reg_expr exp;
+	reg_expr exp;
     do {
         expresion(&exp);
         escribir_exp(&exp); // #escribir_exp
     } while(next_token() == COMA && (match(COMA), true));
 }
 
-void expresion(struct reg_expr * preg) {
+void expresion(reg_expr * preg) {
 	// <expresión> -> <termino> {<operadorAditivo> <termino>}
-    struct reg_expr left_operand, right_operand;
-    struct reg_op op;
+    reg_expr left_operand, right_operand;
+    reg_op op;
     token tok;
     
     termino(&left_operand);
@@ -116,10 +116,10 @@ void expresion(struct reg_expr * preg) {
     *preg = left_operand;
 }
 
-void termino(struct reg_expr * preg) {
+void termino(reg_expr * preg) {
 	// <término> -> <primaria> {<operadorMultiplicativo> <primaria>}
-    struct reg_expr left_operand, right_operand;
-    struct reg_op op;
+    reg_expr left_operand, right_operand;
+    reg_op op;
     token tok;
     
     primaria(&left_operand);
@@ -133,7 +133,7 @@ void termino(struct reg_expr * preg) {
 	*preg = left_operand;
 }
 
-void primaria(struct reg_expr * preg) {
+void primaria(reg_expr * preg) {
     /* <primaria> -> <identificador>
 	 *             | CONSTANTE
 	 *             | PARENIZQUIERDO <expresión> PARENDERECHO
@@ -160,7 +160,7 @@ void primaria(struct reg_expr * preg) {
 	}
 }
 
-void operador_aditivo(struct reg_op * preg) {
+void operador_aditivo(reg_op * preg) {
 	// <operadorAditivo> -> SUMA | RESTA
     token tok = next_token();
     
@@ -171,7 +171,7 @@ void operador_aditivo(struct reg_op * preg) {
 	*preg = procesar_op(); // #procesar_op
 }
 
-void operador_multiplicativo(struct reg_op * preg) {
+void operador_multiplicativo(reg_op * preg) {
     // <operadorMultiplicativo> -> MULTIPLICACION | DIVISION
     token tok = next_token();
     
@@ -180,19 +180,4 @@ void operador_multiplicativo(struct reg_op * preg) {
     
     match(tok);
     *preg = procesar_op(); // #procesar_op
-}
-
-int main(int argc, const char * argv[]) {
-    fin = stdin;
-    fout = stdout;
-    if (argc > 1) fin = fopen(argv[1], "r");
-    if (argc > 2) fout = fopen(argv[2], "w");
-    if(fin == NULL || ferror(fin)) error_de_archivo(argv[1]);
-    if(fout == NULL || ferror(fout)) error_de_archivo(argv[2]);
-    
-	objetivo();
-    
-    fclose(fin);
-    if (argc > 2) fclose(fout);
-    return EXIT_SUCCESS;
 }

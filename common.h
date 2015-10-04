@@ -15,15 +15,17 @@
 
 extern FILE * fin, * fout;
 
+typedef const char * string;
 typedef enum {lowercase, uppercase} case_type;
+
 void change_string_case(char * const, case_type);
 
-bool strings_are_equal(const char *, const char *);
+bool strings_are_equal(string, string);
 
-int find_string_in_array(const char *, const char **);
+int find_string_in_array(string, string[]);
 
 const char * string_from_int(int);
 
-const char * wide_char_at(int, const char *);
+const char * wide_char_at(int, string);
 
 #endif /* common_h */

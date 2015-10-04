@@ -21,6 +21,6 @@ extern unsigned yyline;
 token next_token(void);
 void match(token);
 
-const char * get_token_name(token);
+string get_token_name(token);
 
 #endif /* scanner_h */

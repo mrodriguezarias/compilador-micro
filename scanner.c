@@ -3,17 +3,18 @@
  *  Implementación del escáner
  */
 
-#include "error.h"
 #include "scanner.h"
+#include "error.h"
+#include "symbol.h"
 
-const char * tok_names[] = {
+string tok_names[] = {
     "INICIO", "FIN", "LEER", "ESCRIBIR", "ID", "CONSTANTE",
     "PARENIZQUIERDO", "PARENDERECHO", "PUNTOYCOMA", "COMA",
     "ASIGNACION", "SUMA", "RESTA", "MULTIPLICACION", "DIVISION",
     "COMENTARIO", "FDT", "ERRORLEXICO", "ERRORASIG", "ERRORCTE", NULL
 };
 
-static char lexeme[100];
+static char lexeme[128];
 char * const yytext = lexeme;
 unsigned yyline = 1, lexindex = 0;
 
@@ -34,13 +35,14 @@ unsigned transition_table[][16] = {
 
 /* Devuelve el nombre del token pasado por parámetro.
  */
-const char * get_token_name(token tok) {
-    return tok_names[tok];
+string get_token_name(token tok) {
+    string name = tok_names[tok];
+    return name != NULL ? name : "NIL";
 }
 
 /* Devuelve el token del nombre pasado por parámetro.
  */
-token get_token_from_name(const char * name) {
+token get_token_from_name(string name) {
     char NAME[32];
     strcpy(NAME, name);
     change_string_case(NAME, uppercase);
@@ -51,13 +53,13 @@ token get_token_from_name(const char * name) {
 /* Devuelve el índice de la columna de la tabla de transiciones
  * correspondiente al carácter pasado como parámetro.
  */
-short get_symbol(char c) {
-    char symbols[] = "();,:=+-*/\n";
-    unsigned i, n = (unsigned) strlen(symbols);
-    symbols[n] = EOF;
+short character_type_of(char c) {
+    char cs[] = "();,:=+-*/\n";
+    unsigned i, n = (unsigned) strlen(cs);
+    cs[n] = EOF;
     
     for (i = 0; i <= n; i++)
-        if (c == symbols[i])
+        if (c == cs[i])
             return i;
     
     if (isalpha(c)) return i;
@@ -88,7 +90,7 @@ void unread_char(void) {
 }
 
 token scanner(void) {
-    unsigned symbol, state;
+    unsigned ctype, state;
     state = lexindex = 0;
     
     while (state < 7) {
@@ -96,8 +98,8 @@ token scanner(void) {
         if (state == 0 && isspace(c))
             lexindex--;
         
-        symbol = get_symbol(c);
-        state = transition_table[state][symbol];
+        ctype = character_type_of(c);
+        state = transition_table[state][ctype];
     }
     
     switch (state) {
@@ -124,6 +126,7 @@ token scanner(void) {
         case 16: // reconoce operador de multiplicación (*)
             return MULTIPLICACION;
         case 17: // reconoce operador de división (/)
+            unread_char();
             return DIVISION;
         case 18: // reconoce comentario
             unread_char();
@@ -146,17 +149,18 @@ token scanner(void) {
 token next_token(void) {
     if (read_next_token) {
         read_next_token = false;
-        current_token = scanner();
+        do {
+            current_token = scanner();
+        } while (current_token == COMENTARIO);
         switch (current_token) {
             case ID:
-                // TODO
+                if (!buscar(yytext, symbols, &current_token))
+                    colocar(yytext, symbols);
                 break;
             case ERRORLEXICO:
             case ERRORASIG:
             case ERRORCTE:
                 error_lexico(current_token);
-            case COMENTARIO:
-                current_token = scanner();
             default: ;
         }
     }
@@ -179,7 +183,7 @@ int column_lengths[] = {COL1LENGTH, COL2LENGTH, COL3LENGTH};
 
 /* Imprime una barra divisoria de la tabla según el patrón indicado.
  */
-void print_div(const char * pattern) {
+void print_div(string pattern) {
     int i, j;
     for (i = 0; i < 7; i++) {
         if (i % 2)
@@ -192,8 +196,8 @@ void print_div(const char * pattern) {
 
 /* Imprime una fila de la tabla con los valores pasados por parámetro.
  */
-void print_row(const char * col1, const char * col2, const char * col3) {
-    const char * cols[] = {col1, col2, col3}, * sep = "┃│";
+void print_row(string col1, string col2, string col3) {
+    string cols[] = {col1, col2, col3}, sep = "┃│";
     for (int i = 0; i < 7; i++) {
         if (i % 2)
             fprintf(fout, " %-*s", column_lengths[(i - 1) / 2] - 1, cols[(i - 1) / 2]);
@@ -216,7 +220,7 @@ void handle_interrupt_signal() {
 
 /* Usar esta función como main() y compilar el programa para probar el escáner.
  */
-int test_scanner(int argc, const char * argv[]) {
+int test_scanner(int argc, string argv[]) {
     fin = stdin;
     fout = stdout;
     if (argc > 1) fin = fopen(argv[1], "r");

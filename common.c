@@ -17,17 +17,17 @@ void change_string_case(char * const str, case_type ct) {
 
 /* Determina si dos cadenas de texto son iguales.
  */
-bool strings_are_equal(const char * str1, const char * str2) {
+bool strings_are_equal(string str1, string str2) {
     return strcmp(str1, str2) == 0;
 }
 
 /* Busca una cadena dentro de un array de cadenas null-terminated.
  * Si la encuentra devuelve su índice, de lo contrario retorna -1.
  */
-int find_string_in_array(const char * string, const char ** array) {
-    const char * elem;
-    for (int i = 0; (elem = array[i]); i++)
-        if (strings_are_equal(elem, string))
+int find_string_in_array(string needle, string * haystack) {
+    string str;
+    for (int i = 0; (str = haystack[i]); i++)
+        if (strings_are_equal(str, needle))
             return i;
     return -1;
 }
@@ -44,10 +44,10 @@ const char * string_from_int(int integer) {
  * de la cadena pasada por parámetro.
  */
 char _wide_char_at_buffer[4];
-const char * wide_char_at(int pos, const char * string) {
+const char * wide_char_at(int pos, string str) {
     int i;
     for (i = 0; i < 3; i++)
-        _wide_char_at_buffer[i] = string[3 * pos + i];
+        _wide_char_at_buffer[i] = str[3 * pos + i];
     _wide_char_at_buffer[i] = '\0';
     return _wide_char_at_buffer;
 }
