@@ -13,7 +13,11 @@
 #include <signal.h> // signal()
 #include <stdbool.h> // bool, true, false
 
-extern FILE * fin, * fout;
+extern FILE * fin, * fout, * ferr;
+
+// Modos de compilación
+enum {SCAN, PARSE, ASSEMBLE};
+extern int compiler_mode;
 
 typedef const char * string;
 typedef enum {lowercase, uppercase} case_type;
@@ -24,8 +28,14 @@ bool strings_are_equal(string, string);
 
 int find_string_in_array(string, string[]);
 
-const char * string_from_int(int);
+int find_char_in_string(char, string);
 
-const char * wide_char_at(int, string);
+string string_from_int(int);
+
+int int_from_string(string);
+
+string wide_char_at(int, string);
+
+bool file_exists(string);
 
 #endif /* common_h */

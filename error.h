@@ -8,8 +8,10 @@
 
 #include "scanner.h"
 
-void error_lexico(token);
-void error_sintactico(token, string);
-void error_de_archivo(string);
+void lexical_error(token);
+void syntax_error(token, string);
+
+void file_error(string);
+void invalid_argument(string);
 
 #endif /* error_h */

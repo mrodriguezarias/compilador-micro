@@ -72,7 +72,7 @@ void sentencia(void) {
 			break;
 
 		default:
-			error_sintactico(tok, "SENTENCIA");
+			syntax_error(tok, "SENTENCIA");
 	}
 }
 
@@ -85,9 +85,9 @@ void lista_identificadores(void){
     } while(next_token() == COMA && (match(COMA), true));
 }
 
-void identificador(reg_expr * preg){
+void identificador(reg_expr * reg){
 	match(ID);
-	*preg = procesar_id(); // #procesar_id
+	*reg = procesar_id(); // #procesar_id
 }
 
 void lista_expresiones(void) {
@@ -99,7 +99,7 @@ void lista_expresiones(void) {
     } while(next_token() == COMA && (match(COMA), true));
 }
 
-void expresion(reg_expr * preg) {
+void expresion(reg_expr * reg) {
 	// <expresión> -> <termino> {<operadorAditivo> <termino>}
     reg_expr left_operand, right_operand;
     reg_op op;
@@ -113,10 +113,10 @@ void expresion(reg_expr * preg) {
         left_operand = gen_infijo(&left_operand, &op, &right_operand); // #gen_infijo
     }
     
-    *preg = left_operand;
+    *reg = left_operand;
 }
 
-void termino(reg_expr * preg) {
+void termino(reg_expr * reg) {
 	// <término> -> <primaria> {<operadorMultiplicativo> <primaria>}
     reg_expr left_operand, right_operand;
     reg_op op;
@@ -130,10 +130,10 @@ void termino(reg_expr * preg) {
         left_operand = gen_infijo(&left_operand, &op, &right_operand); // #gen_infijo
     }
     
-	*preg = left_operand;
+	*reg = left_operand;
 }
 
-void primaria(reg_expr * preg) {
+void primaria(reg_expr * reg) {
     /* <primaria> -> <identificador>
 	 *             | CONSTANTE
 	 *             | PARENIZQUIERDO <expresión> PARENDERECHO
@@ -141,43 +141,43 @@ void primaria(reg_expr * preg) {
 	token tok = next_token();
 	switch (tok) {
 		case ID:
-			identificador(preg);
+			identificador(reg);
 			break;
 
 		case CONSTANTE:
 			match(CONSTANTE);
-			*preg = procesar_cte(); // #procesar_cte
+			*reg = procesar_cte(); // #procesar_cte
 			break;
 
 		case PARENIZQUIERDO:
 			match(PARENIZQUIERDO);
-			expresion(preg);
+			expresion(reg);
 			match(PARENDERECHO);
 			break;
 
 		default:
-			error_sintactico(tok, "PRIMARIA");
+			syntax_error(tok, "PRIMARIA");
 	}
 }
 
-void operador_aditivo(reg_op * preg) {
+void operador_aditivo(reg_op * reg) {
 	// <operadorAditivo> -> SUMA | RESTA
     token tok = next_token();
     
     if (tok != SUMA && tok != RESTA)
-        error_sintactico(tok, "OPERADOR_ADITIVO");
+        syntax_error(tok, "OPERADOR_ADITIVO");
     
     match(tok);
-	*preg = procesar_op(); // #procesar_op
+	*reg = procesar_op(); // #procesar_op
 }
 
-void operador_multiplicativo(reg_op * preg) {
+void operador_multiplicativo(reg_op * reg) {
     // <operadorMultiplicativo> -> MULTIPLICACION | DIVISION
     token tok = next_token();
     
     if (tok != MULTIPLICACION && tok != DIVISION)
-        error_sintactico(tok, "OPERADOR_MULTIPLICATIVO");
+        syntax_error(tok, "OPERADOR_MULTIPLICATIVO");
     
     match(tok);
-    *preg = procesar_op(); // #procesar_op
+    *reg = procesar_op(); // #procesar_op
 }

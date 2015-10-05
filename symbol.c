@@ -4,8 +4,9 @@
  */
 
 #include "symbol.h"
+#include "semantic.h"
 
-const unsigned symbol_size = 1024;
+#define symbol_size 1024
 unsigned symbol_length = 0;
 
 symbol symbols[symbol_size];
@@ -40,6 +41,7 @@ bool buscar(string lex, symbol * symbols, token * tok) {
 /* Agrega a la tabla de símbolos un identificador de lexema lex.
  */
 void colocar(string lex, symbol * symbols) {
+    generar("Declare", lex, "Integer", NULL);
     symbol * sym = symbols + symbol_length++;
     strcpy(sym->lex, lex);
     sym->tok = ID;

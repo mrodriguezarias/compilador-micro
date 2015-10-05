@@ -22,5 +22,6 @@ token next_token(void);
 void match(token);
 
 string get_token_name(token);
+void test_scanner(void);
 
 #endif /* scanner_h */

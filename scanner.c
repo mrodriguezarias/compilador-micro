@@ -132,7 +132,7 @@ token scanner(void) {
             unread_char();
             return COMENTARIO;
         case 19: // reconoce fin de texto
-            yyline = 1;
+            strcpy(lexeme, "(fdt)");
             return FDT;
         case 20: // reconoce errores léxicos
             return ERRORLEXICO;
@@ -142,6 +142,7 @@ token scanner(void) {
             unread_char();
             return ERRORCTE;
         default:
+            strcpy(lexeme, "(nil)");
             return NIL;
     }
 }
@@ -154,13 +155,12 @@ token next_token(void) {
         } while (current_token == COMENTARIO);
         switch (current_token) {
             case ID:
-                if (!buscar(yytext, symbols, &current_token))
-                    colocar(yytext, symbols);
+                buscar(yytext, symbols, &current_token);
                 break;
             case ERRORLEXICO:
             case ERRORASIG:
             case ERRORCTE:
-                error_lexico(current_token);
+                lexical_error(current_token);
             default: ;
         }
     }
@@ -168,7 +168,7 @@ token next_token(void) {
 }
 
 void match(token t) {
-    if (next_token() != t) error_sintactico(t, NULL);
+    if (next_token() != t) syntax_error(t, NULL);
     read_next_token = true;
 }
 
@@ -218,21 +218,16 @@ void handle_interrupt_signal() {
     exit(EXIT_SUCCESS);
 }
 
-/* Usar esta función como main() y compilar el programa para probar el escáner.
+/* Función para probar el escáner.
  */
-int test_scanner(int argc, string argv[]) {
-    fin = stdin;
-    fout = stdout;
-    if (argc > 1) fin = fopen(argv[1], "r");
-    if (argc > 2) fout = fopen(argv[2], "w");
-    
+void test_scanner(void) {
     print_div("┏━┯━┯━┓");
     print_row("LEXEME", "TOKEN", "LINE");
     print_div("┠─┼─┼─┨");
     
     token t = NIL;
 
-    if (argc == 1) {
+    if (fin == stdin && fout == stdout) {
         signal(SIGINT, handle_interrupt_signal);
         fin = fopen(TEMPFILEPATH, "w+");
         int c, i;
@@ -259,8 +254,4 @@ int test_scanner(int argc, string argv[]) {
             print_row(yytext, get_token_name(t), string_from_int(yyline));
         print_div("┗━┷━┷━┛");
     }
-
-    if (argc > 1) fclose(fin);
-    if (argc > 2) fclose(fout);
-    return EXIT_SUCCESS;
 }
