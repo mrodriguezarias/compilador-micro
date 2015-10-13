@@ -32,7 +32,7 @@ bool buscar(string lex, symbol * symbols, token * tok) {
     symbol * sym;
     for (unsigned i = 0; i < symbol_length && (sym = symbols + i); i++) {
         if (!strings_are_equal(lex, sym->lex)) continue;
-        tok && (*tok = sym->tok);
+        if (tok != NULL) *tok = sym->tok;
         return true;
     }
     return false;
